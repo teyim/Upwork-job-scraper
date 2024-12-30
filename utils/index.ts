@@ -6,7 +6,7 @@ import "dotenv/config";
 // Utility function for setting up Puppeteer browser
 export async function initializeBrowser() {
   try {
-    const { browser } = await connect({
+    const  browser  = await puppeteer.launch({
       headless: true,
       args: [
         "--disable-setuid-sandbox",
