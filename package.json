@@ -3,9 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "tsc && node index.js",
-    "dev": "tsc && nodemon index.js"
+  "build": "tsc",
+  "start": "npm run build && node index.js"
   },
   "keywords": [],
   "author": "",
