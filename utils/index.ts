@@ -1,5 +1,6 @@
 import { connect } from "puppeteer-real-browser";
 import { JobPost } from "../types";
+import "dotenv/config";
 
 // Utility function for setting up Puppeteer browser
 export async function initializeBrowser() {
