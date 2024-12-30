@@ -6,7 +6,7 @@ export async function handler(req: Request) {
 
   if (body) {
     const chatId = body?.message?.chat?.id;
-    const messageText = body.message.text;
+    const messageText = body?.message?.text;
 
     console.log(chatId);
     await sendNewJobNotifications(chatId);

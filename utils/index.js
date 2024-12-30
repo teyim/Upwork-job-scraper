@@ -20,7 +20,7 @@ function initializeBrowser() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const { browser } = yield (0, puppeteer_real_browser_1.connect)({
-                headless: false,
+                headless: true,
                 args: ["--start-maximized"],
                 customConfig: {},
                 turnstile: true,

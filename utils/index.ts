@@ -5,7 +5,7 @@ import { JobPost } from "../types";
 export async function initializeBrowser() {
   try {
     const { browser } = await connect({
-      headless: false,
+      headless: true,
       args: ["--start-maximized"],
       customConfig: {},
       turnstile: true,
