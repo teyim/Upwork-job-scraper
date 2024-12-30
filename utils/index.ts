@@ -14,7 +14,10 @@ export async function initializeBrowser() {
         "--single-process",
         "--no-zygote",
       ],
-
+    executablePath:
+      process.env.NODE_ENV === "production"
+        ? process.env.PUPPETEER_EXECUTABLE_PATH
+        : puppeteer.executablePath(),
       customConfig: {},
       turnstile: true,
       connectOption: { defaultViewport: null },
@@ -36,12 +39,7 @@ export async function scrapeJobsForTerm(
 ): Promise<JobPost[]> {
   const jobs: JobPost[] = [];
   const searchURL = `https://www.upwork.com/nx/search/jobs/?nbs=1&q=${term}&page=1&per_page=10`;
-  const page = await browser.newPage({
-    executablePath:
-      process.env.NODE_ENV === "production"
-        ? process.env.PUPPETEER_EXECUTABLE_PATH
-        : puppeteer.executablePath(),
-  });
+  const page = await browser.newPage();
 
   try {
     await page.goto(searchURL, { waitUntil: "networkidle2", timeout: 0 });
