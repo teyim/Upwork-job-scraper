@@ -21,7 +21,7 @@ app.post("*", async (req: Request, res: Response) => {
 });
 
 app.get("*", async (req: Request, res: Response) => {
-  res.send(await handler(req));
+  res.send("App up and running");
   return;
 });
 
