@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.DB_COLLECTION = exports.DB_NAME = exports.chatId = exports.databaseUrl = exports.WEBHOOK_URL = exports.URI = exports.TELEGRAM_API = void 0;
+require("dotenv/config");
+const { TOKEN, SERVER_URL } = process.env;
+exports.TELEGRAM_API = `https://api.telegram.org/bot${TOKEN}`;
+exports.URI = `/webhook/${TOKEN}`;
+exports.WEBHOOK_URL = SERVER_URL;
+exports.databaseUrl = process.env.MONGO_URI || "";
+exports.chatId = process.env.CHAT_ID || "";
+exports.DB_NAME = "upwork";
+exports.DB_COLLECTION = "jobs";
