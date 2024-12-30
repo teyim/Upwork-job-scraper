@@ -29,7 +29,7 @@ app.post("*", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     return;
 }));
 app.get("*", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.send(yield (0, lib_1.handler)(req));
+    res.send("App up and running");
     return;
 }));
 app.listen(process.env.port || 5000, () => __awaiter(void 0, void 0, void 0, function* () {

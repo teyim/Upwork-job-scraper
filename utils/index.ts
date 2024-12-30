@@ -1,5 +1,6 @@
 import { connect } from "puppeteer-real-browser";
 import { JobPost } from "../types";
+import puppeteer from "puppeteer";
 import "dotenv/config";
 
 // Utility function for setting up Puppeteer browser
@@ -8,15 +9,12 @@ export async function initializeBrowser() {
     const { browser } = await connect({
       headless: true,
       args: [
-      "--disable-setuid-sandbox",
-      "--no-sandbox",
-      "--single-process",
-      "--no-zygote",
-    ],
-    executablePath:
-      process.env.NODE_ENV === "production"
-        ? process.env.PUPPETEER_EXECUTABLE_PATH
-        : puppeteer.executablePath(),
+        "--disable-setuid-sandbox",
+        "--no-sandbox",
+        "--single-process",
+        "--no-zygote",
+      ],
+
       customConfig: {},
       turnstile: true,
       connectOption: { defaultViewport: null },
@@ -38,7 +36,12 @@ export async function scrapeJobsForTerm(
 ): Promise<JobPost[]> {
   const jobs: JobPost[] = [];
   const searchURL = `https://www.upwork.com/nx/search/jobs/?nbs=1&q=${term}&page=1&per_page=10`;
-  const page = await browser.newPage();
+  const page = await browser.newPage({
+    executablePath:
+      process.env.NODE_ENV === "production"
+        ? process.env.PUPPETEER_EXECUTABLE_PATH
+        : puppeteer.executablePath(),
+  });
 
   try {
     await page.goto(searchURL, { waitUntil: "networkidle2", timeout: 0 });

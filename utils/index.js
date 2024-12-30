@@ -8,6 +8,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.initializeBrowser = initializeBrowser;
 exports.scrapeJobsForTerm = scrapeJobsForTerm;
@@ -15,13 +18,20 @@ exports.removeDuplicates = removeDuplicates;
 exports.sortJobsByPostedDateDescending = sortJobsByPostedDateDescending;
 exports.createJobMessage = createJobMessage;
 const puppeteer_real_browser_1 = require("puppeteer-real-browser");
+const puppeteer_1 = __importDefault(require("puppeteer"));
+require("dotenv/config");
 // Utility function for setting up Puppeteer browser
 function initializeBrowser() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const { browser } = yield (0, puppeteer_real_browser_1.connect)({
                 headless: true,
-                args: ["--start-maximized"],
+                args: [
+                    "--disable-setuid-sandbox",
+                    "--no-sandbox",
+                    "--single-process",
+                    "--no-zygote",
+                ],
                 customConfig: {},
                 turnstile: true,
                 connectOption: { defaultViewport: null },
@@ -42,7 +52,11 @@ function scrapeJobsForTerm(browser, term) {
     return __awaiter(this, void 0, void 0, function* () {
         const jobs = [];
         const searchURL = `https://www.upwork.com/nx/search/jobs/?nbs=1&q=${term}&page=1&per_page=10`;
-        const page = yield browser.newPage();
+        const page = yield browser.newPage({
+            executablePath: process.env.NODE_ENV === "production"
+                ? process.env.PUPPETEER_EXECUTABLE_PATH
+                : puppeteer_1.default.executablePath(),
+        });
         try {
             yield page.goto(searchURL, { waitUntil: "networkidle2", timeout: 0 });
             yield page.waitForSelector("section");
