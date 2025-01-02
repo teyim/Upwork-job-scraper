@@ -8,4 +8,13 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm ci
 COPY . .
-CMD [ "node", "index.js" ]
+
+# Build the TypeScript code
+RUN npm run build
+
+# Expose the port that the application will run on
+EXPOSE 5000
+
+# Set the command to run the application
+CMD ["node", "dist/index.js"]
+

@@ -6,7 +6,7 @@ import "dotenv/config";
 // Utility function for setting up Puppeteer browser
 export async function initializeBrowser() {
   try {
-    const  browser  = await puppeteer.launch({
+    const browser = await puppeteer.launch({
       headless: true,
       args: [
         "--disable-setuid-sandbox",
@@ -14,16 +14,10 @@ export async function initializeBrowser() {
         "--single-process",
         "--no-zygote",
       ],
-    executablePath:
-      process.env.NODE_ENV === "production"
-        ? process.env.PUPPETEER_EXECUTABLE_PATH
-        : puppeteer.executablePath(),
-      customConfig: {},
-      turnstile: true,
-      connectOption: { defaultViewport: null },
-      disableXvfb: false,
-      ignoreAllFlags: false,
-      plugins: [require("puppeteer-extra-plugin-click-and-wait")()],
+      executablePath:
+        process.env.NODE_ENV === "production"
+          ? process.env.PUPPETEER_EXECUTABLE_PATH
+          : puppeteer.executablePath(),
     });
     return browser;
   } catch (error) {
