@@ -9,6 +9,8 @@ export async function initializeBrowser() {
     const browser = await puppeteer.launch({
       headless: true,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      executablePath: "/usr/bin/google-chrome-stable",
+      timeout: 0,
     });
     return browser;
   } catch (error) {
