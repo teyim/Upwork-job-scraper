@@ -27,9 +27,10 @@ export async function scrapeJobsForTerm(
   const jobs: JobPost[] = [];
   const searchURL = `https://www.upwork.com/nx/search/jobs/?nbs=1&q=${term}&page=1&per_page=10`;
   const page = await browser.newPage();
+  page.setDefaultNavigationTimeout(0);
 
   try {
-    await page.goto(searchURL, { waitUntil: "networkidle2", timeout: 0 });
+    await page.goto(searchURL, { waitUntil: "domcontentloaded", timeout: 0 });
     await page.waitForSelector("section");
 
     const jobsData = await page.$$eval(

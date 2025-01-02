@@ -43,8 +43,9 @@ function scrapeJobsForTerm(browser, term) {
         const jobs = [];
         const searchURL = `https://www.upwork.com/nx/search/jobs/?nbs=1&q=${term}&page=1&per_page=10`;
         const page = yield browser.newPage();
+        page.setDefaultNavigationTimeout(0);
         try {
-            yield page.goto(searchURL, { waitUntil: "networkidle2", timeout: 0 });
+            yield page.goto(searchURL, { waitUntil: "domcontentloaded", timeout: 0 });
             yield page.waitForSelector("section");
             const jobsData = yield page.$$eval("section > article", (jobElements) => {
                 const baseURL = "https://www.upwork.com";
