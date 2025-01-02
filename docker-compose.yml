@@ -1,0 +1,17 @@
+version: "3.8"
+services:
+  app:
+    build: .
+    container_name: puppeteer-app
+    volumes:
+      - .:/usr/src/app # Mount the current directory to the container's /usr/src/app
+    ports:
+      - "5000:5000" # Expose the app's port
+    env_file:
+      - .env
+    environment:
+      - PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+      - PUPPETEER_SKIP_DOWNLOAD=true
+      - PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
+    command: npm run dev # Replace with your start script if different
+    restart: always # Ensure the same container is used after a crash
