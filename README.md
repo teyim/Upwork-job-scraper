@@ -15,7 +15,7 @@ This project is a Node.js application written in TypeScript using Express.js and
 
 - Sends alerts for newly added jobs via a Telegram bot.
 
-- Configurable scraping interval and keywords.
+- Configurable scraping interval and keywords(to be completed).
 
 - Dockerized for consistent deployment.
 
