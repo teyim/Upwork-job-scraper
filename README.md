@@ -7,17 +7,17 @@ This project is a Node.js application written in TypeScript using Express.js and
 
 ## Features
 
-Scrapes job listings from Upwork using Puppeteer.
+- Scrapes job listings from Upwork using Puppeteer.
 
-Filters jobs based on specified keywords.
+- Filters jobs based on specified keywords.
 
-Stores job data in MongoDB and compares new jobs to previously stored ones.
+- Stores job data in MongoDB and compares new jobs to previously stored ones.
 
-Sends alerts for newly added jobs via a Telegram bot.
+- Sends alerts for newly added jobs via a Telegram bot.
 
-Configurable scraping interval and keywords.
+- Configurable scraping interval and keywords.
 
-Dockerized for consistent deployment.
+- Dockerized for consistent deployment.
 
 
 
