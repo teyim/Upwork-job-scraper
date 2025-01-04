@@ -15,8 +15,8 @@ export async function scrapeData() {
   const searchTerms = [
     "javascript",
     "developer",
-    "frontend",
-    "frontend developer",
+    // "frontend",
+    // "frontend developer",
   ];
   const jobs: JobPost[] = [];
   const browser = await initializeBrowser();
@@ -35,7 +35,6 @@ export async function scrapeData() {
     const uniqueJobs = removeDuplicates(jobsWithDates);
 
     const sortedUniqueJobs = sortJobsByPostedDateDescending(uniqueJobs);
-    console.log(sortedUniqueJobs);
 
     const collection = await getCollection(DB_COLLECTION);
 
