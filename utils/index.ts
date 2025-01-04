@@ -6,11 +6,16 @@ import "dotenv/config";
 // Utility function for setting up Puppeteer browser
 export async function initializeBrowser() {
   try {
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-      executablePath: "/usr/bin/google-chrome-stable",
-      timeout: 0,
+    const { browser } = await connect({
+      args: ["--start-maximized"],
+      turnstile: true,
+      headless: false,
+      // disableXvfb: true,
+      customConfig: {},
+      connectOption: {
+        defaultViewport: null,
+      },
+      plugins: [require("puppeteer-extra-plugin-click-and-wait")()],
     });
     return browser;
   } catch (error) {
@@ -31,6 +36,7 @@ export async function scrapeJobsForTerm(
 
   try {
     await page.goto(searchURL, { waitUntil: "domcontentloaded", timeout: 0 });
+    await page.clickAndWaitForNavigation("body");
     await page.waitForSelector("section");
 
     const jobsData = await page.$$eval(
@@ -68,7 +74,7 @@ export async function scrapeJobsForTerm(
               )
               ?.textContent?.trim() || "No budget",
           sentToTelegram: false,
-          createdAt: new Date(),
+          createdAt: new Date().toISOString(),
         }));
       }
     );
