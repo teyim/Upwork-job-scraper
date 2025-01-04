@@ -9,7 +9,7 @@ export async function initializeBrowser() {
     const { browser } = await connect({
       args: ["--start-maximized"],
       turnstile: true,
-      headless: true,
+      headless: false,
       // disableXvfb: true,
       customConfig: {},
       connectOption: {
