@@ -7,7 +7,7 @@ import "dotenv/config";
 export async function initializeBrowser() {
   try {
     const { browser } = await connect({
-      args: ["--start-maximized"],
+      args: ['--start-maximized','--disable-gpu','--no-sandbox','--disable-setuid-sandbox','--disable-web-security' ],
       turnstile: true,
       headless: false,
       // disableXvfb: true,
