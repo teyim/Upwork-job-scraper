@@ -4,6 +4,7 @@ import {
   initializeBrowser,
   removeDuplicates,
   scrapeJobsForTerm,
+  shortenUpworkJobUrl,
   sortJobsByPostedDateDescending,
 } from "../utils";
 
@@ -15,8 +16,8 @@ export async function scrapeData() {
   const searchTerms = [
     "javascript",
     "developer",
-    // "frontend",
-    // "frontend developer",
+    "frontend",
+    "frontend developer",
   ];
   const jobs: JobPost[] = [];
   const browser = await initializeBrowser();
@@ -27,12 +28,19 @@ export async function scrapeData() {
       jobs.push(...termJobs);
     }
 
-    const jobsWithDates = jobs.map((job) => ({
-      ...job,
-      postedDate: chrono.parseDate(job.posted) as any,
-    }));
+    const jobsWithDatesAndIds = jobs.map((job) => {
+      const shortenedUrl = shortenUpworkJobUrl(job.url);
+      const jobIdMatch = /~([0-9a-f]+)/.exec(job.url); // Extract the job ID using regex
 
-    const uniqueJobs = removeDuplicates(jobsWithDates);
+      return {
+        ...job,
+        postedDate: chrono.parseDate(job.posted) as any,
+        url: shortenedUrl ?? "", // Add shortened URL
+        jobId: jobIdMatch ? jobIdMatch[1] : "0", // Add jobId (only the ID without '~')
+      };
+    });
+
+    const uniqueJobs = removeDuplicates(jobsWithDatesAndIds);
 
     const sortedUniqueJobs = sortJobsByPostedDateDescending(uniqueJobs);
 

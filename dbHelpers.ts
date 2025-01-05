@@ -20,7 +20,7 @@ async function initDatabase(): Promise<Db> {
 
     // Example index creation for "jobs" collection
     const jobsCollection = database.collection(DB_COLLECTION);
-    await jobsCollection.createIndex({ url: 1 }, { unique: true });
+    await jobsCollection.createIndex({ jobId: 1 }, { unique: true });
     await jobsCollection.createIndex(
       { createdAt: 1 },
       {
@@ -67,11 +67,10 @@ export async function upsertJobs(
   jobs: JobPost[],
   jobsCollection: Collection<JobPost>
 ): Promise<void> {
-  console.log(jobs);
   try {
     const bulkOps = jobs.map((job) => ({
       updateOne: {
-        filter: { url: job.url }, // Use URL as the unique identifier
+        filter: { jobId: job.jobId }, // Use URL as the unique identifier
         update: { $setOnInsert: job }, // insert the job
         upsert: true, // insert job if no match is found
       },
@@ -116,13 +115,13 @@ export async function deleteSentJobs(
   }
 }
 
-export async function markJobsAsSentAndDelete(
+export async function markJobsAsSent(
   jobsCollection: Collection<JobPost>,
-  jobUrls: string[]
+  jobId: string
 ): Promise<void> {
   try {
-    await jobsCollection.updateMany(
-      { url: { $in: jobUrls } },
+    await jobsCollection.updateOne(
+      { jobId: jobId },
       { $set: { sentToTelegram: true } }
     );
   } catch (error) {

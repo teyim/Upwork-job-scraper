@@ -1,4 +1,4 @@
-import { getCollection, markJobsAsSentAndDelete } from "../dbHelpers";
+import { getCollection, markJobsAsSent } from "../dbHelpers";
 import { Collection } from "mongodb";
 import { getNewJobsForTelegram } from "../dbHelpers";
 import { JobPost } from "../types";
@@ -11,6 +11,7 @@ function delay(ms: number) {
 }
 
 async function sendSequentialMessages(
+  collection: Collection<JobPost>,
   chatId: string,
   jobs: JobPost[],
   delayMs: number
@@ -24,7 +25,11 @@ async function sendSequentialMessages(
         parse_mode: parse_mode,
         reply_markup: reply_markup,
       });
-      console.log("Response:", response.data);
+
+      if (response.data.ok) {
+        await markJobsAsSent(collection, job.jobId);
+      }
+
       // Process the response as needed
     } catch (error) {
       console.error("Error:", error);
@@ -32,6 +37,7 @@ async function sendSequentialMessages(
     }
     await delay(delayMs); // Wait for the specified delay before the next iteration
   }
+  return;
 }
 
 export async function sendNewJobNotifications(chatId: string) {
@@ -40,12 +46,7 @@ export async function sendNewJobNotifications(chatId: string) {
 
     const newJobs = await getNewJobsForTelegram(collection);
 
-    console.log(newJobs[0]);
-
-    await sendSequentialMessages(chatId, newJobs, 2);
-
-    const jobUrls = newJobs.map((job) => job.url);
-    await markJobsAsSentAndDelete(collection, jobUrls);
+    await sendSequentialMessages(collection, chatId, newJobs, 4);
 
     return;
   } catch (error) {

@@ -24,6 +24,23 @@ export async function initializeBrowser() {
   }
 }
 
+export function shortenUpworkJobUrl(url: string): string | null {
+  // Define a regular expression to capture the job identifier
+  const regex = /~([0-9a-f]+)/;
+
+  // Execute the regex on the provided URL
+  const match = regex.exec(url);
+
+  // If a match is found, construct the shortened URL
+  if (match) {
+    const jobId = match[0]; // This includes the '~' prefix
+    return `https://www.upwork.com/jobs/${jobId}`;
+  }
+
+  // Return null if the URL doesn't match the expected pattern
+  return "";
+}
+
 // Function to scrape jobs for a specific search term
 export async function scrapeJobsForTerm(
   browser: any,
@@ -31,12 +48,14 @@ export async function scrapeJobsForTerm(
 ): Promise<JobPost[]> {
   const jobs: JobPost[] = [];
   const searchURL = `https://www.upwork.com/nx/search/jobs/?nbs=1&q=${term}&page=1&per_page=10`;
-  const page = await browser.newPage();
+  const page = await browser.newPage({
+    executablePath: "/usr/bin/google-chrome-stable",
+  });
   page.setDefaultNavigationTimeout(0);
 
   try {
     await page.goto(searchURL, { waitUntil: "domcontentloaded", timeout: 0 });
-    await page.clickAndWaitForNavigation("body");
+
     await page.waitForSelector("section");
 
     const jobsData = await page.$$eval(
@@ -49,9 +68,9 @@ export async function scrapeJobsForTerm(
             job.querySelector(".job-tile-title")?.textContent?.trim() ||
             "No title",
           url:
-            baseURL +
-            (job.querySelector(".job-tile-title > a")?.getAttribute("href") ||
-              ""),
+            job.querySelector(".job-tile-title > a")?.getAttribute("href") ||
+            "",
+
           posted:
             job
               .querySelector(
@@ -110,39 +129,22 @@ export function sortJobsByPostedDateDescending(jobs: JobPost[]): JobPost[] {
   });
 }
 
-function shortenUpworkJobUrl(url: string): string | null {
-  // Define a regular expression to capture the job identifier
-  const regex = /~([0-9a-f]+)/;
-
-  // Execute the regex on the provided URL
-  const match = regex.exec(url);
-
-  // If a match is found, construct the shortened URL
-  if (match) {
-    const jobId = match[0]; // This includes the '~' prefix
-    return `https://www.upwork.com/jobs/${jobId}`;
-  }
-
-  // Return null if the URL doesn't match the expected pattern
-  return null;
-}
-
 export function createJobMessage(job: JobPost) {
   return {
     text:
-      `💼 <strong>Job</strong>: \n${job.name}\n\n` +
+      `<strong>${job.name}</strong>\n\n` +
       `📅 <strong>Posted</strong>: \n${job.posted || "N/A"}\n\n` +
       `📝 <strong>Description</strong>:\n${
         job.desc
           ? `<blockquote expandable>${job.desc}</blockquote>`
           : "No description available"
       }\n\n` +
-      `💰 <strong>Budget</strong>:* \n${job.budget || "Not specified"}`,
+      `💰 <strong>Budget</strong>: \n${job.budget || "Not specified"}`,
     parse_mode: "HTML",
     reply_markup: {
       inline_keyboard: [
         [
-          { text: "🔗 Open Job", url: shortenUpworkJobUrl(job.url) }, // Button for the job URL
+          { text: "🔗 Open Job", url: job.url }, // Button for the job URL
         ],
       ],
     },

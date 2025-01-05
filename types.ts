@@ -2,6 +2,7 @@ import { ObjectId } from "mongodb";
 
 export interface JobPost {
   _id: ObjectId;
+  jobId: string;
   name: string;
   url: string;
   posted: string;
