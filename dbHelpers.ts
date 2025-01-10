@@ -117,14 +117,21 @@ export async function deleteSentJobs(
 
 export async function markJobsAsSent(
   jobsCollection: Collection<JobPost>,
-  jobId: string
+  jobIds: string[]
 ): Promise<void> {
   try {
-    await jobsCollection.updateOne(
-      { jobId: jobId },
+    if (jobIds.length === 0) {
+      console.log("No jobs to mark as sent.");
+      return;
+    }
+
+    await jobsCollection.updateMany(
+      { jobId: { $in: jobIds } }, // Only update jobs with jobIds in the array
       { $set: { sentToTelegram: true } }
     );
+
+    console.log(`${jobIds.length} jobs marked as sent.`);
   } catch (error) {
-    console.error("Error marking and deleting jobs after sending", error);
+    console.error("Error marking jobs as sent", error);
   }
 }

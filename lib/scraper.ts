@@ -18,6 +18,10 @@ export async function scrapeData() {
     "developer",
     "frontend",
     "frontend developer",
+    "React",
+    "Nextjs",
+    "Typescript",
+    "Tailwindcss",
   ];
   const jobs: JobPost[] = [];
   const browser = await initializeBrowser();

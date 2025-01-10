@@ -7,14 +7,19 @@ import "dotenv/config";
 export async function initializeBrowser() {
   try {
     const { browser } = await connect({
-      args: ['--start-maximized','--disable-gpu','--no-sandbox','--disable-setuid-sandbox','--disable-web-security' ],
+      args: [
+        "--no-sandbox",
+        "--start-maximized",
+        "--disable-gpu",
+        "--disable-setuid-sandbox",
+        "--disable-web-security",
+      ],
       turnstile: true,
       headless: false,
-      // disableXvfb: true,
+      disableXvfb: false,
+      connectOption: {},
+      ignoreAllFlags: false,
       customConfig: {},
-      connectOption: {
-        defaultViewport: null,
-      },
       plugins: [require("puppeteer-extra-plugin-click-and-wait")()],
     });
     return browser;
@@ -130,16 +135,50 @@ export function sortJobsByPostedDateDescending(jobs: JobPost[]): JobPost[] {
 }
 
 export function createJobMessage(job: JobPost) {
+  const maxMessageLength = 3000;
+  const ellipsis = "...";
+
+  // Construct the message components
+  const jobName = `<strong>${job.name}</strong>\n\n`;
+  const postedDate = `📅 <strong>Posted</strong>: \n${job.posted || "N/A"}\n\n`;
+  const budget = `💰 <strong>Budget</strong>: \n${
+    job.budget || "Not specified"
+  }`;
+
+  // Function to calculate the total message length
+  const calculateMessageLength = (description: string) => {
+    return (
+      jobName.length +
+      postedDate.length +
+      budget.length +
+      description.length +
+      50 // Additional buffer for formatting and safety
+    );
+  };
+
+  // Truncate the description if necessary
+  let description = job.desc
+    ? `<blockquote expandable>${job.desc}</blockquote>`
+    : "No description available";
+
+  if (calculateMessageLength(description) > maxMessageLength) {
+    const availableLength = maxMessageLength - calculateMessageLength("");
+    const truncatedDescription = job.desc.slice(
+      0,
+      availableLength - ellipsis.length
+    );
+    description = `<blockquote expandable>${truncatedDescription}${ellipsis}</blockquote>`;
+  }
+
+  // Construct the final message text
+  const messageText =
+    jobName +
+    postedDate +
+    `📝 <strong>Description</strong>:\n${description}\n\n` +
+    budget;
+
   return {
-    text:
-      `<strong>${job.name}</strong>\n\n` +
-      `📅 <strong>Posted</strong>: \n${job.posted || "N/A"}\n\n` +
-      `📝 <strong>Description</strong>:\n${
-        job.desc
-          ? `<blockquote expandable>${job.desc}</blockquote>`
-          : "No description available"
-      }\n\n` +
-      `💰 <strong>Budget</strong>: \n${job.budget || "Not specified"}`,
+    text: messageText,
     parse_mode: "HTML",
     reply_markup: {
       inline_keyboard: [

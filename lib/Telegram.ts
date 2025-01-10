@@ -6,38 +6,30 @@ import { axiosInstance } from "./axios";
 import { createJobMessage } from "../utils";
 import { DB_COLLECTION } from "../constants";
 
-function delay(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 async function sendSequentialMessages(
   collection: Collection<JobPost>,
   chatId: string,
   jobs: JobPost[],
   delayMs: number
 ) {
-  for (const job of jobs) {
-    const { text, parse_mode, reply_markup } = createJobMessage(job);
-    try {
-      const response = await axiosInstance.post("sendMessage", {
+  try {
+    for (const job of jobs) {
+      const { text, parse_mode, reply_markup } = createJobMessage(job);
+
+      await axiosInstance.post("sendMessage", {
         chat_id: chatId,
         text: text,
         parse_mode: parse_mode,
         reply_markup: reply_markup,
       });
-
-      if (response.data.ok) {
-        await markJobsAsSent(collection, job.jobId);
-      }
-
-      // Process the response as needed
-    } catch (error) {
-      console.error("Error:", error);
-      // Handle the error as needed
+      // Add delay between requests to prevent rate limiting
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
     }
-    await delay(delayMs); // Wait for the specified delay before the next iteration
+
+    console.log("All jobs sent successfully!");
+  } catch (error) {
+    console.error("Error sending jobs to Telegram:", error);
   }
-  return;
 }
 
 export async function sendNewJobNotifications(chatId: string) {
@@ -46,9 +38,13 @@ export async function sendNewJobNotifications(chatId: string) {
 
     const newJobs = await getNewJobsForTelegram(collection);
 
-    await sendSequentialMessages(collection, chatId, newJobs, 4);
+    const jobsToSend = newJobs.slice(0, 10); // prevent telegram server error for long job list
 
-    return;
+    await sendSequentialMessages(collection, chatId, jobsToSend, 2);
+
+    const NewJobIds = jobsToSend.map((newJob) => newJob.jobId);
+
+    await markJobsAsSent(collection, NewJobIds);
   } catch (error) {
     console.error("Error sending Telegram notifications:", error);
   }
