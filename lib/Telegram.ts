@@ -5,7 +5,6 @@ import { JobPost } from "../types";
 import { axiosInstance } from "./axios";
 import { createJobMessage } from "../utils";
 import { DB_COLLECTION, TELEGRAM_API } from "../constants";
-import axios from "axios";
 
 async function sendSequentialMessages(
   collection: Collection<JobPost>,
