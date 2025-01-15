@@ -4,7 +4,8 @@ import { getNewJobsForTelegram } from "../dbHelpers";
 import { JobPost } from "../types";
 import { axiosInstance } from "./axios";
 import { createJobMessage } from "../utils";
-import { DB_COLLECTION } from "../constants";
+import { DB_COLLECTION, TELEGRAM_API } from "../constants";
+import axios from "axios";
 
 async function sendSequentialMessages(
   collection: Collection<JobPost>,
@@ -48,4 +49,27 @@ export async function sendNewJobNotifications(chatId: string) {
   } catch (error) {
     console.error("Error sending Telegram notifications:", error);
   }
+}
+
+//handle incoming messages and send response
+export async function handleTelegramMessage(body: any): Promise<string> {
+  if (body?.message?.chat?.id) {
+    const chatId = body.message.chat.id;
+    const messageText = body.message.text;
+
+    try {
+      await axiosInstance.post(`sendMessage`, {
+        chat_id: chatId,
+        text: `Your Chat ID is -- ${chatId}`,
+      });
+
+      console.log(`Message sent to Chat ID: ${chatId}, Text: ${messageText}`);
+      return "Message processed successfully";
+    } catch (error) {
+      console.error("Error sending message:", error);
+      throw new Error("Failed to send message");
+    }
+  }
+
+  throw new Error("Invalid request: No chat ID found");
 }
