@@ -3,7 +3,7 @@ import axios from "axios";
 import "dotenv/config";
 import { TELEGRAM_API, WEBHOOK_URL } from "./constants";
 import { handleTelegramMessage } from "./lib/Telegram";
-// import "./cron-job";
+import "./cron-job";
 
 const app = express();
 app.use(express.json());
