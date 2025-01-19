@@ -3,7 +3,7 @@ import cron from "node-cron";
 import { scrapeData } from "./lib/scraper";
 import { sendNewJobNotifications } from "./lib/Telegram";
 
-cron.schedule(" */5 * * * *", async () => {
+cron.schedule(" * * * * *", async () => {
   console.log("Running scheduled job...");
 
   try {

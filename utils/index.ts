@@ -61,6 +61,15 @@ export async function scrapeJobsForTerm(
   try {
     await page.goto(searchURL, { waitUntil: "domcontentloaded", timeout: 0 });
 
+    const text = await page.evaluate(() => {
+      const element = document.querySelector(
+        "#main > div > div > div > div:nth-child(1) > header"
+      );
+      return element ? element?.textContent?.trim() : null;
+    });
+
+    console.log("Extracted Text:", text);
+
     await page.waitForSelector("section");
 
     const jobsData = await page.$$eval(
